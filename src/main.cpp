@@ -1,48 +1,42 @@
 #include <Arduino.h>
 #include "/Users/rick/Documents/PlatformIO/Projects/ACreader/src/utilities.cpp"
+#include <SPI.h>
+#include <SD.h>
+#include <time.h>
 #define LED_amarillo 3
 #define LED_rojo 4
 #define LED_verde 5
-
-
+#define SD_CS_PIN 10
+LEDController led(LED_rojo, LED_verde, LED_amarillo);
+File myFile;
 void setup() {
+  led.begin();
+  SD.begin(SD_CS_PIN);
+  myFile=SD.open("data.txt", FILE_WRITE);
+  if (myFile) {
+    Serial.println("File opened successfully");
+    //turn on LED?
 
-  Serial.begin(115200);
+    //----------
+    //write headers
+    myFile.println("Voltage,Timestamp ");
+    myFile.close();
 
-  // ---------- ADC CONFIG ----------
-
-  ADMUX = 0b01100000;
-  // REFS0 = 1 -> referencia AVcc (5V)
-  // ADLAR = 1 -> resultado ajustado a izquierda
-  // MUX = 0000 -> A0
-
-  ADCSRA = 0b11100111;
-  // ADEN  = 1 -> habilita ADC
-  // ADSC  = 1 -> inicia conversion
-  // ADATE = 1 -> modo free running
-  // prescaler 128
-
-  ADCSRB = 0b00000000;
-  // free running mode
-
-  DIDR0 = 0b00000001;
-  // deshabilita entrada digital en A0
+  } else {
+    Serial.println("Error opening file");
+    myFile.close();
+        //----------
+        //write headers
+  } 
 }
-
-void loop() {
-
-  while (!(ADCSRA & (1 << ADIF)));
-  // espera conversión
-
-  ADCSRA |= (1 << ADIF);
-  // limpia bandera
-
-  uint8_t value = ADCH;
-
-  unsigned long t = micros();
-
-  // CSV falta indegrar
-  Serial.print(t);
-  Serial.print(",");
-  Serial.println(value);
+void loop(){
+  myFile=SD.open("data.txt", FILE_WRITE);
+  myFile.print(map(analogRead(A0),0,1023,0,5));
+  myFile.print(",");
+  myFile.println(millis());
+  myFile.close();
+  //float voltage= read* (5.0/1023.0);
+   
+  
+  
 }

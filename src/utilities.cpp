@@ -14,6 +14,7 @@ class LEDController {
     int redPin;
     int greenPin;
     int yellowPin;
+    int SD_CS_PIN;
     Gridstate state;
   
   public:
