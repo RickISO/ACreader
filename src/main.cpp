@@ -7,9 +7,19 @@
 #define LED_rojo 4
 #define LED_verde 5
 #define SD_CS_PIN 10
+bool resiv_Sig=false;
 LEDController led(LED_rojo, LED_verde, LED_amarillo);
 File myFile;
+bool signal (float(read)) {
+    if (read!=0) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  };
 void setup() {
+  Serial.begin(115200);
   led.begin();
   SD.begin(SD_CS_PIN);
   myFile=SD.open("data.txt", FILE_WRITE);
@@ -20,6 +30,7 @@ void setup() {
     //----------
     //write headers
     myFile.println("Voltage,Timestamp ");
+    Serial.println("Voltage,Timestamp ");
     myFile.close();
 
   } else {
@@ -28,12 +39,16 @@ void setup() {
         //----------
         //write headers
   } 
-}
+};
 void loop(){
+  float(read);
+  resiv_Sig=signal(read);
+  led.updatestate(resiv_Sig);
+  led.TURNLED();
   myFile=SD.open("data.txt", FILE_WRITE);
-  myFile.print(map(analogRead(A0),0,1023,0,5));
-  myFile.print(",");
-  myFile.println(millis());
+  String message = map(analogRead(A0),0,1023,0,5) + "," + millis();
+  Serial.println(message);
+  myFile.println(message);
   myFile.close();
   //float voltage= read* (5.0/1023.0);
    

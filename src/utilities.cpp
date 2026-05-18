@@ -28,15 +28,15 @@ class LEDController {
       pinMode(greenPin, OUTPUT);
       pinMode(yellowPin, OUTPUT);
     }
-    void updatestate(float frequency) {
+    void updatestate(bool signal) {
         Gridstate state;
-      if (frequency == 0) {
+      if (signal == false) {
         state = Nosignal;
       }
-      else if (frequency < 59.9 || frequency > 60.1) {
+     /* else if () {
         state = Abnormal;
-      }
-      else {
+      } */
+      else if (signal == true) {
         state = Normal;
       }
     }
